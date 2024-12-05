@@ -1,1 +1,51 @@
-this is infant
+pipeline:
+  name: Simple GitHub CI Pipeline
+  identifier: simple-github-ci-pipeline
+  description: Simple CI pipeline for GitHub integration with Harness
+  projectIdentifier: your-project-id
+  orgIdentifier: your-org-id
+  trigger:
+    type: GitHub
+    spec:
+      connectorRef: github-connector  # Define the GitHub connector reference in Harness
+      repositoryName: your-repo-name  # Replace with your GitHub repository name
+      event: Push
+      sourceRepoBranch: "feature"  # This is the branch to trigger on (e.g., feature)
+  stages:
+    - stage:
+        name: Build
+        identifier: build-stage
+        type: Build
+        description: Build the application
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: Checkout Code
+                  identifier: checkout-code
+                  type: GitClone
+                  spec:
+                    connectorRef: github-connector  # GitHub connector reference
+                    repositoryName: your-repo-name  # GitHub repository name
+                    branch: "main"  # The branch to clone from
+              - step:
+                  name: Install Dependencies
+                  identifier: install-dependencies
+                  type: Run
+                  spec:
+                    image: node:16  # Adjust to your application’s requirements
+                    command: "bash"
+                    shell: "bash"
+                    source: |
+                      npm install
+              - step:
+                  name: Run Tests
+                  identifier: run-tests
+                  type: Run
+                  spec:
+                    image: node:16  # Adjust to your application’s requirements
+                    command: "bash"
+                    shell: "bash"
+                    source: |
+                      npm test
+
