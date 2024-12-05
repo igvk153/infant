@@ -1,22 +1,14 @@
 pipeline:
-  name: Simple GitHub CI Pipeline
-  identifier: simple-github-ci-pipeline
-  description: Simple CI pipeline for GitHub integration with Harness
-  projectIdentifier: your-project-id
-  orgIdentifier: your-org-id
-  trigger:
-    type: GitHub
-    spec:
-      connectorRef: github-connector  # Define the GitHub connector reference in Harness
-      repositoryName: your-repo-name  # Replace with your GitHub repository name
-      event: Push
-      sourceRepoBranch: "feature"  # This is the branch to trigger on (e.g., feature)
+  name: Simple-CI-Pipeline
+  identifier: simple-ci-pipeline
+  projectIdentifier: my-project
+  orgIdentifier: my-org
+  description: "A simple CI pipeline"
   stages:
     - stage:
         name: Build
         identifier: build-stage
-        type: Build
-        description: Build the application
+        type: CI
         spec:
           execution:
             steps:
@@ -25,27 +17,23 @@ pipeline:
                   identifier: checkout-code
                   type: GitClone
                   spec:
-                    connectorRef: github-connector  # GitHub connector reference
-                    repositoryName: your-repo-name  # GitHub repository name
-                    branch: "main"  # The branch to clone from
-              - step:
-                  name: Install Dependencies
-                  identifier: install-dependencies
-                  type: Run
-                  spec:
-                    image: node:16  # Adjust to your application’s requirements
-                    command: "bash"
-                    shell: "bash"
-                    source: |
-                      npm install
+                    connectorRef: git_connector
+                    repositoryName: example-repo
+                    branch: main
+
               - step:
                   name: Run Tests
                   identifier: run-tests
+                  type: RunTests
+                  spec:
+                    connectorRef: test-connector
+                    testCommand: npm test
+
+              - step:
+                  name: Build Application
+                  identifier: build-application
                   type: Run
                   spec:
-                    image: node:16  # Adjust to your application’s requirements
-                    command: "bash"
-                    shell: "bash"
-                    source: |
-                      npm test
-
+                    commands:
+                      - "npm install"
+                      - "npm run build"
